@@ -1,4 +1,4 @@
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:19-al2-jdk
+FROM public.ecr.aws/docker/library/openjdk:17-ea-14-alpine3.14
 COPY . .
 RUN ./gradlew clean build
 COPY ./build/libs/hello-world-0.1-all.jar helloworld.jar
