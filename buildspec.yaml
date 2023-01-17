@@ -4,7 +4,7 @@ env:
     key: "value"
     ECR_REPOSITORY: "slack"
     REPOSITORY_URI: "949263681218.dkr.ecr.ap-south-1.amazonaws.com/slack"
-    ECR_LOGIN: "ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com"
+#    ECR_LOGIN: "ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com"
 phases:
   install:
     run-as: root
@@ -16,7 +16,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - aws $ECR_LOGIN
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
       - echo $GITBRANCH
@@ -34,7 +34,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - aws $ECR_LOGIN
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Create task file"
