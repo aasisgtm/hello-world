@@ -1,0 +1,44 @@
+version: 0.2
+env:
+  variables:
+    key: "value"
+    ECR_REPOSITORY: "slack"
+    REPOSITORY_URI: "949263681218.dkr.ecr.ap-south-1.amazonaws.com/slack"
+    ECR_LOGIN: "ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com"
+phases:
+  install:
+    run-as: root
+    runtime-versions:
+      #java: openjdk11
+      docker: 18
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws $ECR_LOGIN
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
+      - echo $GITBRANCH
+
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - pwd
+      - docker build -t $ECR_REPOSITORY .
+      - docker tag $ECR_REPOSITORY:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - aws $ECR_LOGIN
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo "Create task file"
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_DEFINITION_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinition.json
+artifacts:
+  files:
+    - imagedefinition.json
