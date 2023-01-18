@@ -2,7 +2,7 @@ version: 0.2
 env:
   variables:
     key: "value"
-    ECR_REPOSITORY: "slack"
+#    ECR_REPOSITORY: "slack"
     REPOSITORY_URI: "949263681218.dkr.ecr.ap-south-1.amazonaws.com/slack"
 #    ECR_LOGIN: "ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 949263681218.dkr.ecr.ap-south-1.amazonaws.com"
 phases:
@@ -27,7 +27,7 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - pwd
-      - docker build -t $ECR_REPOSITORY .
+      - docker build -t $REPOSITORY_URI .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
