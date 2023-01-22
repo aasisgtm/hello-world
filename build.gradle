@@ -1,6 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.micronaut.application") version "3.7.0"
+    id("war")
 }
 
 version = "0.1"
@@ -39,5 +40,14 @@ micronaut {
     }
 }
 
+// war {
+//     baseName = 'C:/Users/Leapfrog/Desktop/hello-world/src/main/java/aasis'
+//     version = '1.0'
+// }
 
-
+war {
+    webAppDirectory = file('src/main/webapp')
+    from 'src/rootContent' // adds a file-set to the root of the archive
+    webInf { from 'src/additionalWebInf' } // adds a file-set to the WEB-INF dir.
+    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
+}
